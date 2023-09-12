@@ -23,8 +23,14 @@ public class Circolo {
 	if(!soci.contains(s)){
 		throw new SocioNullException();
 	}
-	soci.get(s).nome=nuovoN;
-	soci.get(s).cognome=nuovoC;
+	for (Socio socio : soci) {
+		if (socio.nome.equals(s.nome)) {
+			socio.nome = nuovoN;
+			socio.cognome = nuovoC;
+			return; 
+		}
+	}
+
 	}
 	public void incrementoEta(){
 	 for (Socio socio : soci) {

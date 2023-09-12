@@ -3,7 +3,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import java.util.Date;
 import java.util.LinkedList;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 class AppTest {
     private Circolo circolo;
@@ -22,7 +25,11 @@ class AppTest {
     @Test
     void testAggiungiSocioDuplicato() {
         Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+         try {
         circolo.aggiungiSocio(socio);
+    } catch (SocioEsisteException e) {
+        fail("Eccezione SocioEsisteException non prevista");
+    }
 
         assertThrows(SocioEsisteException.class, () -> circolo.aggiungiSocio(socio));
     }
@@ -30,7 +37,11 @@ class AppTest {
     @Test
     void testEliminaSocio() {
         Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+         try {
         circolo.aggiungiSocio(socio);
+    } catch (SocioEsisteException e) {
+        fail("Eccezione SocioEsisteException non prevista");
+    }
 
         assertDoesNotThrow(() -> circolo.eliminaSocio(socio));
     }
@@ -45,14 +56,18 @@ class AppTest {
     @Test
     void testModificaSocio() {
         Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+         try {
         circolo.aggiungiSocio(socio);
+    } catch (SocioEsisteException e) {
+        fail("Eccezione SocioEsisteException non prevista");
+    }
 
         String nuovoNome = "Sofia";
         String nuovoCognome = "Bianchi";
 
         assertDoesNotThrow(() -> circolo.modificaSocio(socio, nuovoNome, nuovoCognome));
-        assertEquals(nuovoNome, socio.getNome());
-        assertEquals(nuovoCognome, socio.getCognome());
+        assertEquals(nuovoNome, socio.nome);
+        assertEquals(nuovoCognome, socio.cognome);
     }
 
     @Test
@@ -69,26 +84,35 @@ class AppTest {
     void testIncrementoEta() {
         Socio socio1 = new Socio("Luigi", "Rossi", 30, "maschio");
         Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
+        
+        try {
         circolo.aggiungiSocio(socio1);
         circolo.aggiungiSocio(socio2);
-
+    } catch (SocioEsisteException e) {
+        fail("Eccezione SocioEsisteException non prevista");
+    }
         circolo.incrementoEta();
 
-        assertEquals(31, socio1.getEta());
-        assertEquals(26, socio2.getEta());
+        assertEquals(31, socio1.eta);
+        assertEquals(26, socio2.eta);
     }
 
     @Test
-    void testEtaMedia() {
-        Socio socio1 = new Socio("Luigi", "Rossi", 30, "maschio");
-        Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
-        circolo.aggiungiSocio(socio1);
-        circolo.aggiungiSocio(socio2);
+   void testEtaMedia() {
+    Socio socio3 = new Socio("Luigi", "Rossi", 30, "maschio");
+    Socio socio4 = new Socio("Sofia", "Bianchi", 25, "femmina");
 
-        double mediaEta = circolo.etaMedia();
-
-        assertEquals(27.5, mediaEta);
+    try {
+        circolo.aggiungiSocio(socio3);
+        circolo.aggiungiSocio(socio4);
+    } catch (SocioEsisteException e) {
+        fail("Eccezione SocioEsisteException non prevista");
     }
+
+    double mediaEta = circolo.etaMedia();
+
+    assertEquals(27.5, mediaEta);
+}
 
     @Test
     void testEtaMediaMaschiFemmine() {
@@ -96,10 +120,15 @@ class AppTest {
         Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
         Socio socio3 = new Socio("Silvia", "Arnoldi", 35, "femmina");
         Socio socio4 = new Socio("Gianfiliberto", "Patata", 28, "maschio");
+        
+         try {
         circolo.aggiungiSocio(socio1);
         circolo.aggiungiSocio(socio2);
         circolo.aggiungiSocio(socio3);
         circolo.aggiungiSocio(socio4);
+    } catch (SocioEsisteException e) {
+        fail("Eccezione SocioEsisteException non prevista");
+    }
 
 
         assertDoesNotThrow(() -> circolo.etaMediaMaschiFemmine());
@@ -111,10 +140,14 @@ class AppTest {
         Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
         Socio socio3 = new Socio("Silvia", "Arnoldi", 35, "femmina");
         Socio socio4 = new Socio("Gianfiliberto", "Patata", 28, "maschio");
-        circolo.aggiungiSocio(socio1);
-        circolo.aggiungiSocio(socio2);
-        circolo.aggiungiSocio(socio3);
-        circolo.aggiungiSocio(socio4);
+            try {
+            circolo.aggiungiSocio(socio1);
+            circolo.aggiungiSocio(socio2);
+                circolo.aggiungiSocio(socio3);
+                circolo.aggiungiSocio(socio4);
+        } catch (SocioEsisteException e) {
+            fail("Eccezione SocioEsisteException non prevista");
+        }
 
         assertDoesNotThrow(() -> circolo.percentuale());
     }
