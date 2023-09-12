@@ -5,152 +5,118 @@ import java.util.Date;
 import java.util.LinkedList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-
-
 class AppTest {
-    Ristorante ristorante;
+    private Circolo circolo;
+
     @BeforeEach
-    public void setUp() {
-        ristorante = new Ristorante();
-        Cliente silvia = new Cliente("Silvia", "Arnoldi");
-        Cliente charles = new Cliente("Charles", "Leclerc");
-        Cliente alessandro = new Cliente("Alessandro", "Rossi");
-        Cliente luigi = new Cliente("Luigi", "Orsini");
-        ristorante.aggiungiCliente(silvia);
-        ristorante.aggiungiCliente(charles);
-        ristorante.aggiungiCliente(alessandro);
-        ristorante.aggiungiCliente(luigi);
-    }
-    @Test
-    public void testAggiungiCliente() {
-        assertEquals(4, ristorante.elencoClientiOrdinatiPerNumeroPrenotazioni().size());
+    void setUp() {
+        circolo = new Circolo();
     }
 
     @Test
-    public void testAggiungiPrenotazione() {
-        Cliente cliente = new Cliente("Silvia", "Arnoldi");
-        Date dataInserimento = new Date();
-        Date dataPrenotazione = new Date();
-        int numeroCoperti = 3;
-        Prenotazione prenotazione = new Prenotazione(cliente, dataInserimento, dataPrenotazione, numeroCoperti);
-        ristorante.aggiungiPrenotazione(prenotazione);
-        assertEquals(1, ristorante.ricercaPrenotazioniPerCliente(cliente).size());
-        assertEquals(1, ristorante.ricercaPrenotazioniPerData(dataPrenotazione).size());
-        assertEquals(numeroCoperti, ristorante.numeroCopertiPerData(dataPrenotazione));
-        assertEquals(numeroCoperti, ristorante.numeroCopertiInRangeDiDate(dataPrenotazione, dataPrenotazione));
+    void testAggiungiSocio() {
+        Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+        assertDoesNotThrow(() -> circolo.aggiungiSocio(socio));
     }
 
     @Test
-    public void testModificaCliente() {
-        Cliente cliente = new Cliente("Silvia", "Arnoldi");
-        String nuovoNome = "Silvia Maria";
-        String nuovoCognome = "Rossi";
-        try {
-            ristorante.modificaCliente(cliente, nuovoNome, nuovoCognome);
-            LinkedList<Cliente> clienti = ristorante.elencoClientiOrdinatiPerNumeroPrenotazioni();
-            assertEquals(nuovoNome, clienti.get(0).nome);
-            assertEquals(nuovoCognome, clienti.get(0).cognome);
-        } catch (ClienteNullException e) {
-            fail("ClienteNullException ");
-        }
-    }
+    void testAggiungiSocioDuplicato() {
+        Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+        circolo.aggiungiSocio(socio);
 
-
-
-    @Test
-public void testModificaPrenotazione() {
-    Cliente cliente = new Cliente("Silvia", "Arnoldi");
-    Date dataInserimento = new Date();
-    Date dataPrenotazione = new Date();
-    int numeroCoperti = 3;
-    Prenotazione prenotazione = new Prenotazione(cliente, dataInserimento, dataPrenotazione, numeroCoperti);
-    ristorante.aggiungiPrenotazione(prenotazione);
-    int nuovoNumeroCoperti = 5;
-
-    try {
-        ristorante.modificaPrenotazione(prenotazione, nuovoNumeroCoperti);
-        assertEquals(nuovoNumeroCoperti, ristorante.numeroCopertiPerData(dataPrenotazione));
-        assertEquals(nuovoNumeroCoperti, ristorante.numeroCopertiInRangeDiDate(dataPrenotazione, dataPrenotazione));
-    } catch (PrenotazioneNullException e) {
-        fail(" PrenotazioneNullException");
-    }
-}
-
-
-    @Test
-    public void testEliminaCliente() throws ClienteNullException {
-        Cliente cliente = new Cliente("Silvia", "Arnoldi");
-        ristorante.eliminaCliente(cliente);
-        assertEquals(3, ristorante.elencoClientiOrdinatiPerNumeroPrenotazioni().size());
-    }
-
-
-    @Test
-    public void testEliminaPrenotazione() throws PrenotazioneNullException {
-        Cliente cliente = new Cliente("Silvia", "Arnoldi");
-        Date dataInserimento = new Date();
-        Date dataPrenotazione = new Date();
-        int numeroCoperti = 3;
-        Prenotazione prenotazione = new Prenotazione(cliente, dataInserimento, dataPrenotazione, numeroCoperti);
-        ristorante.aggiungiPrenotazione(prenotazione);
-        ristorante.eliminaPrenotazione(prenotazione);
-        assertEquals(0, ristorante.ricercaPrenotazioniPerCliente(cliente).size());
-        assertEquals(0, ristorante.ricercaPrenotazioniPerData(dataPrenotazione).size());
-        assertEquals(0, ristorante.numeroCopertiPerData(dataPrenotazione));
-        assertEquals(0, ristorante.numeroCopertiInRangeDiDate(dataPrenotazione, dataPrenotazione));
-    }
-
-    
-
-    @Test
-    public void testRicercaPrenotazioniPerCliente() {
-        Cliente cliente = new Cliente("Silvia", "Arnoldi");
-        assertEquals(0, ristorante.ricercaPrenotazioniPerCliente(cliente).size());
+        assertThrows(SocioEsisteException.class, () -> circolo.aggiungiSocio(socio));
     }
 
     @Test
-    public void testRicercaPrenotazioniPerData() {
-        Date data = new Date();
-        assertEquals(0, ristorante.ricercaPrenotazioniPerData(data).size());
+    void testEliminaSocio() {
+        Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+        circolo.aggiungiSocio(socio);
+
+        assertDoesNotThrow(() -> circolo.eliminaSocio(socio));
     }
 
     @Test
-    public void testNumeroCopertiPerData() {
-        Date data = new Date();
-        assertEquals(0, ristorante.numeroCopertiPerData(data));
+    void testEliminaSocioInesistente() {
+        Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+
+        assertThrows(SocioNullException.class, () -> circolo.eliminaSocio(socio));
     }
 
     @Test
-    public void testNumeroCopertiInRangeDiDate() {
-        Date dataInizio = new Date();
-        Date dataFine = new Date();
-        assertEquals(0, ristorante.numeroCopertiInRangeDiDate(dataInizio, dataFine));
+    void testModificaSocio() {
+        Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+        circolo.aggiungiSocio(socio);
+
+        String nuovoNome = "Sofia";
+        String nuovoCognome = "Bianchi";
+
+        assertDoesNotThrow(() -> circolo.modificaSocio(socio, nuovoNome, nuovoCognome));
+        assertEquals(nuovoNome, socio.getNome());
+        assertEquals(nuovoCognome, socio.getCognome());
     }
 
     @Test
-    public void testGiornoConMaggiorNumeroCoperti() {
-        assertEquals(null, ristorante.giornoConMaggiorNumeroCoperti());
+    void testModificaSocioInesistente() {
+        Socio socio = new Socio("Luigi", "Rossi", 30, "maschio");
+
+        String nuovoNome = "Sofia";
+        String nuovoCognome = "Bianchi";
+
+        assertThrows(SocioNullException.class, () -> circolo.modificaSocio(socio, nuovoNome, nuovoCognome));
     }
 
     @Test
-    public void testClienteConMaggiorNumeroCopertiPrenotati() {
-        Date dataInserimento= new Date();
-        Date dataPrenotazione = new Date();
-        Cliente cl=new Cliente("Alessandro", "Rossi");
-        Prenotazione p= new Prenotazione(cl, dataInserimento, dataPrenotazione, 6);
-        ristorante.aggiungiPrenotazione(p);
-        Cliente cliente = ristorante.clienteConMaggiorNumeroCopertiPrenotati();
-        assertEquals("Alessandro", cliente.nome);
+    void testIncrementoEta() {
+        Socio socio1 = new Socio("Luigi", "Rossi", 30, "maschio");
+        Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
+        circolo.aggiungiSocio(socio1);
+        circolo.aggiungiSocio(socio2);
+
+        circolo.incrementoEta();
+
+        assertEquals(31, socio1.getEta());
+        assertEquals(26, socio2.getEta());
     }
 
     @Test
-    public void testElencoClientiOrdinatiPerNumeroPrenotazioni() {
-        LinkedList<Cliente> clienti = ristorante.elencoClientiOrdinatiPerNumeroPrenotazioni();
-        assertEquals("Silvia", clienti.get(0).nome);
-        assertEquals("Charles", clienti.get(1).nome);
-        assertEquals("Alessandro", clienti.get(2).nome);
-        assertEquals("Luigi", clienti.get(3).nome);
+    void testEtaMedia() {
+        Socio socio1 = new Socio("Luigi", "Rossi", 30, "maschio");
+        Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
+        circolo.aggiungiSocio(socio1);
+        circolo.aggiungiSocio(socio2);
+
+        double mediaEta = circolo.etaMedia();
+
+        assertEquals(27.5, mediaEta);
     }
 
-   
+    @Test
+    void testEtaMediaMaschiFemmine() {
+        Socio socio1 = new Socio("Luigi", "Rossi", 30, "maschio");
+        Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
+        Socio socio3 = new Socio("Silvia", "Arnoldi", 35, "femmina");
+        Socio socio4 = new Socio("Gianfiliberto", "Patata", 28, "maschio");
+        circolo.aggiungiSocio(socio1);
+        circolo.aggiungiSocio(socio2);
+        circolo.aggiungiSocio(socio3);
+        circolo.aggiungiSocio(socio4);
+
+
+        assertDoesNotThrow(() -> circolo.etaMediaMaschiFemmine());
+    }
+
+    @Test
+    void testPercentuale() {
+        Socio socio1 = new Socio("Luigi", "Rossi", 30, "maschio");
+        Socio socio2 = new Socio("Sofia", "Bianchi", 25, "femmina");
+        Socio socio3 = new Socio("Silvia", "Arnoldi", 35, "femmina");
+        Socio socio4 = new Socio("Gianfiliberto", "Patata", 28, "maschio");
+        circolo.aggiungiSocio(socio1);
+        circolo.aggiungiSocio(socio2);
+        circolo.aggiungiSocio(socio3);
+        circolo.aggiungiSocio(socio4);
+
+        assertDoesNotThrow(() -> circolo.percentuale());
+    }
+  
 }
